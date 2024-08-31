@@ -1,5 +1,6 @@
 resource "google_compute_network" "gae_static_ip" {
-  name = "gae-static-ip-network"
+  name                    = "gae-static-ip-network"
+  auto_create_subnetworks = false
 }
 
 resource "google_compute_subnetwork" "gae_static_ip" {
@@ -9,9 +10,8 @@ resource "google_compute_subnetwork" "gae_static_ip" {
 }
 
 resource "google_compute_router" "gae_static_ip" {
-  name    = "gae-static-ip"
+  name    = "gae-static-ip-router"
   network = google_compute_network.gae_static_ip.id
-
 }
 
 resource "google_compute_address" "gae_static_ip" {
@@ -19,24 +19,11 @@ resource "google_compute_address" "gae_static_ip" {
 }
 
 resource "google_compute_router_nat" "gae_static_ip" {
-  name                               = "gae-static-ip"
-  router                             = "gae-static-ip"
+  name                               = "gae-static-ip-nat"
+  router                             = google_compute_router.gae_static_ip.name
   nat_ip_allocate_option             = "MANUAL_ONLY"
   nat_ips                            = [google_compute_address.gae_static_ip.self_link]
   source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES"
-
-  /*
-  source_subnetwork_ip_ranges_to_nat = "LIST_OF_SUBNETWORKS"
-  subnetwork {
-    name                     = google_compute_subnetwork.gae_static_ip.self_link
-    source_ip_ranges_to_nat  = ["PRIMARY_IP_RANGE"]
-    secondary_ip_range_names = []
-  }
-  */
-}
-
-resource "google_project_service" "serverless_vpc_access" {
-  service = "vpcaccess.googleapis.com"
 }
 
 resource "google_vpc_access_connector" "gae_static_ip" {
