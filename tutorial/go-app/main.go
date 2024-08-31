@@ -16,10 +16,14 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp, _ := http.Get("http://ifconfig.me/")
-	defer resp.Body.Close()
-
 	byteArray, _ := io.ReadAll(resp.Body)
-	fmt.Fprint(w, string(byteArray))
+	_, _ = fmt.Fprintf(w, "%s\n", string(byteArray))
+	_ = resp.Body.Close()
+
+	resp, _ = http.Get("https://checkip.amazonaws.com")
+	byteArray, _ = io.ReadAll(resp.Body)
+	_, _ = fmt.Fprint(w, string(byteArray))
+	_ = resp.Body.Close()
 }
 
 func main() {
