@@ -1,1 +1,5 @@
 runtime: go122
+
+vpc_access_connector:
+  name: projects/mizzy-270104/locations/asia-northeast1/connectors/gae-static-ip
+  egress_setting: all-traffic
